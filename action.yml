@@ -1,0 +1,116 @@
+name: terraform-docs
+author: terraform-docs Authors
+description: Generate Terraform module documentation in pull requests
+
+inputs:
+  config-file:
+    description: Name of terraform-docs config file. To enable, provide the file name (e.g. `.terraform-docs.yml`)
+    required: false
+    default: "disabled"
+  working-dir:
+    description: Comma separated list of directories to generate docs for (ignored if `atlantis-file` or `find-dir` is set)
+    required: false
+    default: "."
+  atlantis-file:
+    description: Name of Atlantis file to extract list of directories by parsing it. To enable, provide the file name (e.g. `atlantis.yaml`)
+    required: false
+    default: "disabled"
+  find-dir:
+    description: Name of root directory to extract list of directories by running `find ./find_dir -name *.tf` (ignored if `atlantis-file` is set)
+    required: false
+    default: "disabled"
+  recursive:
+    description: If true it will update submodules recursively
+    required: false
+    default: "false"
+  recursive-path:
+    description: Submodules path to recursively update
+    required: false
+    default: "modules"
+  output-format:
+    description: terraform-docs format to generate content (see [all formats](https://github.com/terraform-docs/terraform-docs/blob/master/docs/FORMATS_GUIDE.md)) (ignored if `config-file` is set)
+    required: false
+    default: "markdown table"
+  output-method:
+    description: Method should be one of `replace`, `inject`, or `print`. Set as an empty string if `output.mode` and `output.file` are defined in config-file
+    required: false
+    default: "inject"
+  output-file:
+    description: File in module directory where the docs should be placed
+    required: false
+    default: "README.md"
+  template:
+    description: When provided will be used as the template if/when the `output-file` does not exist. Set as an empty string if `output.template` is defined in config-file
+    default: |-
+      <!-- BEGIN_TF_DOCS -->
+      {{ .Content }}
+      <!-- END_TF_DOCS -->
+    required: false
+  args:
+    description: Additional arguments to pass to the command (see [full documentation](https://github.com/terraform-docs/terraform-docs/tree/master/docs))
+    required: false
+    default: ""
+  indention:
+    description: Indention level of Markdown sections [1, 2, 3, 4, 5]
+    required: false
+    default: "2"
+  git-push:
+    description: If true it will commit and push the changes
+    required: false
+    default: "false"
+  git-push-user-name:
+    description: If empty the name of the GitHub Actions bot will be used (i.e. `github-actions[bot]`)
+    required: false
+    default: ""
+  git-push-user-email:
+    description: If empty the no-reply email of the GitHub Actions bot will be used (i.e. `github-actions[bot]@users.noreply.github.com`)
+    required: false
+    default: ""
+  git-commit-message:
+    description: Commit message
+    required: false
+    default: "terraform-docs: automated action"
+  git-push-sign-off:
+    description: If true it will sign-off commit
+    required: false
+    default: "false"
+  git-sub-dir:
+    description: Subdirectory that terraform code is checked out into
+    required: false
+    default: ""
+  fail-on-diff:
+    description: Fail the job if there is any diff found between the generated output and existing file (ignored if `git-push` is set)
+    required: false
+    default: "false"
+
+outputs:
+  num_changed:
+    description: Number of files changed
+
+runs:
+  using: docker
+  image: "Dockerfile"
+  env:
+    INPUT_WORKING_DIR: ${{ inputs.working-dir }}
+    INPUT_ATLANTIS_FILE: ${{ inputs.atlantis-file }}
+    INPUT_FIND_DIR: ${{ inputs.find-dir }}
+    INPUT_RECURSIVE: ${{ inputs.recursive }}
+    INPUT_RECURSIVE_PATH: ${{ inputs.recursive-path }}
+    INPUT_OUTPUT_FORMAT: ${{ inputs.output-format }}
+    INPUT_OUTPUT_METHOD: ${{ inputs.output-method }}
+    INPUT_OUTPUT_FILE: ${{ inputs.output-file }}
+    INPUT_TEMPLATE: ${{ inputs.template }}
+    INPUT_ARGS: ${{ inputs.args }}
+    INPUT_INDENTION: ${{ inputs.indention }}
+    INPUT_GIT_PUSH: ${{ inputs.git-push }}
+    INPUT_GIT_COMMIT_MESSAGE: ${{ inputs.git-commit-message }}
+    INPUT_CONFIG_FILE: ${{ inputs.config-file }}
+    INPUT_FAIL_ON_DIFF: ${{ inputs.fail-on-diff }}
+    INPUT_GIT_PUSH_SIGN_OFF: ${{ inputs.git-push-sign-off }}
+    INPUT_GIT_PUSH_USER_NAME: ${{ inputs.git-push-user-name }}
+    INPUT_GIT_PUSH_USER_EMAIL: ${{ inputs.git-push-user-email }}
+    INPUT_GIT_SUB_DIR: ${{ inputs.git-sub-dir }}
+
+branding:
+  icon: file-text
+  color: gray-dark
