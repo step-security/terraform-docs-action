@@ -12,19 +12,6 @@ branch.
 `v1.4.1` (uses [terraform-docs] v0.20.0, which is supported and tested on Terraform
 version 0.11+ and 0.12+ but may work for others.)
 
-### Upgrade v0 to v1
-
-Release v1 contains following breaking changes:
-
-- default value of `output-file` has been changed to `README.md`
-- default value of `template` has been changed to
-
-  ```text
-  <!-- BEGIN_TF_DOCS -->
-  {{ .Content }}
-  <!-- END_TF_DOCS -->
-  ```
-
 ## Usage
 
 To use terraform-docs github action, configure a YAML workflow file, e.g.
@@ -38,7 +25,7 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v5
       with:
         ref: ${{ github.event.pull_request.head.ref }}
 
@@ -106,7 +93,7 @@ jobs:
 To enable you need to ensure a few things first:
 
 - set `git-push` to `true`
-- use `actions/checkout@v3` with the head ref for PRs or branch name for pushes
+- use `actions/checkout@v5` with the head ref for PRs or branch name for pushes
   - PR
 
     ```yaml
@@ -116,7 +103,7 @@ To enable you need to ensure a few things first:
       docs:
         runs-on: ubuntu-latest
         steps:
-        - uses: actions/checkout@v3
+        - uses: actions/checkout@v5
           with:
             ref: ${{ github.event.pull_request.head.ref }}
     ```
@@ -132,7 +119,7 @@ To enable you need to ensure a few things first:
       docs:
         runs-on: ubuntu-latest
         steps:
-        - uses: actions/checkout@v3
+        - uses: actions/checkout@v5
           with:
             ref: master
     ```
