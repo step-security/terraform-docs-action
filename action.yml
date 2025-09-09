@@ -1,5 +1,5 @@
-name: step-security
-author: terraform-docs Authors
+name: terraform-docs
+author: step-security
 description: Generate Terraform module documentation in pull requests
 
 inputs:
