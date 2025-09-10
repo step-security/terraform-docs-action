@@ -89,7 +89,7 @@ outputs:
 
 runs:
   using: docker
-  image: "Dockerfile"
+  image: "docker://ghcr.io/step-security/terraform-docs-action:v1.4.1@sha256:4db1430fc58a6cab4a30f0bed23903ddc226481742c2d653b1620be3fca17e5c" #v1.4.1
   env:
     INPUT_WORKING_DIR: ${{ inputs.working-dir }}
     INPUT_ATLANTIS_FILE: ${{ inputs.atlantis-file }}
