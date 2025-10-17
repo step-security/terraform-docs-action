@@ -13,20 +13,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM quay.io/terraform-docs/terraform-docs:0.20.0@sha256:37329e2dc2518e7f719a986a3954b10771c3fe000f50f83fd4d98d489df2eae2
+FROM golang:1.25.2-alpine3.22
 
-RUN set -x \
-    && apk update \
-    && apk add --no-cache \
-        bash \
-        git \
-        git-lfs \
-        jq \
-        openssh \
-        sed \
-        yq \
-        curl
+ARG TERRAFORM_DOCS_VERSION=v0.20.0
 
+# Install dependencies
+RUN set -eux; \
+    apk update; \
+    apk add --no-cache \
+      bash \
+      git \
+      git-lfs \
+      jq \
+      openssh \
+      sed \
+      yq \
+      curl \
+      build-base \
+      ca-certificates; \
+    update-ca-certificates
+
+# Clone terraform-docs source
+WORKDIR /app
+RUN git clone --depth 1 --branch "${TERRAFORM_DOCS_VERSION}" https://github.com/terraform-docs/terraform-docs.git .
+
+# Build terraform-docs binary (for v0.20.x main.go is at repo root)
+ENV CGO_ENABLED=0
+RUN go build -trimpath -ldflags="-s -w" -o /usr/local/bin/terraform-docs .
+
+# Verify install
+RUN terraform-docs --version
+
+# Copy entrypoint
 COPY ./src/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
+
