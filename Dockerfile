@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.25.3-alpine3.22@sha256:aee43c3ccbf24fdffb7295693b6e33b21e01baec1b2a55acc351fde345e9ec34
+FROM golang:1.25.5-alpine3.22@sha256:3587db7cc96576822c606d119729370dbf581931c5f43ac6d3fa03ab4ed85a10
 
 ARG TERRAFORM_DOCS_VERSION=v0.20.0
 
@@ -22,6 +22,7 @@ RUN set -eux; \
     apk update; \
     apk add --no-cache \
       bash \
+      busybox=1.37.0-r20 \
       git \
       git-lfs \
       jq \
@@ -35,11 +36,15 @@ RUN set -eux; \
 
 # Clone terraform-docs source
 WORKDIR /app
-RUN git clone --depth 1 --branch "${TERRAFORM_DOCS_VERSION}" https://github.com/terraform-docs/terraform-docs.git .
-
+RUN git clone --depth 1 --branch "${TERRAFORM_DOCS_VERSION}" https://github.com/terraform-docs/terraform-docs.git /terraform \
+    && cd /terraform \
+    && go mod edit -require=golang.org/x/crypto@v0.45.0 \
+    && go mod edit -require=golang.org/x/net@v0.38.0 \
+    && go mod tidy 
+    
 # Build terraform-docs binary (for v0.20.x main.go is at repo root)
 ENV CGO_ENABLED=0
-RUN go build -trimpath -ldflags="-s -w" -o /usr/local/bin/terraform-docs .
+RUN cd /terraform && go build -trimpath -ldflags="-s -w" -o /usr/local/bin/terraform-docs .
 
 # Verify install
 RUN terraform-docs --version
