@@ -14,7 +14,7 @@
 # limitations under the License.
 
 FROM golang:1.26-alpine3.23@sha256:2389ebfa5b7f43eeafbd6be0c3700cc46690ef842ad962f6c5bd6be49ed82039
-ARG TERRAFORM_DOCS_VERSION=v0.20.0
+ARG TERRAFORM_DOCS_VERSION=v0.21.0
 
 # Install dependencies
 RUN set -eux; \
@@ -30,6 +30,7 @@ RUN set -eux; \
       curl \
       build-base \
       ca-certificates; \
+    apk upgrade --no-cache zlib; \
     update-ca-certificates
 
 # Clone terraform-docs source
