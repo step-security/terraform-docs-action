@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.26-alpine3.23@sha256:c2a1f7b2095d046ae14b286b18413a05bb82c9bca9b25fe7ff5efef0f0826166
-ARG TERRAFORM_DOCS_VERSION=v0.20.0
+FROM golang:1.26-alpine3.23@sha256:27f829349da645e287cb195a9921c106fc224eeebbdc33aeb0f4fca2382befa6
+ARG TERRAFORM_DOCS_VERSION=v0.21.0
 
 # Install dependencies
 RUN set -eux; \
@@ -38,6 +38,7 @@ RUN git clone --depth 1 --branch "${TERRAFORM_DOCS_VERSION}" https://github.com/
 
 # Build terraform-docs binary (for v0.20.x main.go is at repo root)
 ENV CGO_ENABLED=0
+RUN go get google.golang.org/grpc@v1.79.3 && go mod tidy
 RUN go build -trimpath -ldflags="-s -w" -o /usr/local/bin/terraform-docs .
 
 # Verify install
